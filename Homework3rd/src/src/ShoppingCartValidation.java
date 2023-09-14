@@ -52,11 +52,9 @@ public class ShoppingCartValidation {
 		Workbook workbook = new XSSFWorkbook(inputStream);
 		Sheet sheet = workbook.getSheet("User Data");
 
-		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-		// Loop through the rows of the Excel sheet
 		for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-
 			Row row = sheet.getRow(i);
 			String email = row.getCell(0).getStringCellValue();
 			String password = row.getCell(1).getStringCellValue();
@@ -71,20 +69,20 @@ public class ShoppingCartValidation {
 
 			emailField.sendKeys(email);
 			passwordField.sendKeys(password);
+    		Thread.sleep(1000);
 			loginButton.click();
-
-			// Check for the expected behavior of a successful login
+			
+			// Check for the presence of error message elements
 			boolean hasInvalidEmailError = isElementPresent(By.cssSelector("#error-div-gwt-sign-in-modal"));
 			boolean hasEmptyPasswordError = isElementPresent(By.cssSelector("#error-div-passwordReset"));
 			boolean hasWrongPasswordError = isElementPresent(By.cssSelector(
 					"#shopping-cart-v2-root > div > div.main-panel > div.left-main-panel > div.empty-cart-sign-in-container > div:nth-child(2) > div > div.signin-input-holder > div.error-panel > div"));
 
 			// Check for any error message displayed
-
-			if (hasInvalidEmailError || hasEmptyPasswordError || hasWrongPasswordError) {
-				System.out.println("Failed login for email: " + email + " and password: " + password);
+			if (!hasInvalidEmailError && !hasEmptyPasswordError && !hasWrongPasswordError) {
+				System.out.println("Success login for email: " + email + " and password: " + password);
 			} else {
-				System.out.println("Succes login for email: " + email + " and password: " + password);
+				System.out.println("Failed login for email: " + email + " and password: " + password);
 			}
 		}
 
